@@ -1,0 +1,128 @@
+/* eslint-disable require-yield, eqeqeq */
+
+import {
+  Sprite,
+  Trigger,
+  Costume,
+  Color,
+  Sound
+} from "https://unpkg.com/leopard@^1/dist/index.esm.js";
+
+export default class Sprite1 extends Sprite {
+  constructor(...args) {
+    super(...args);
+
+    this.costumes = [
+      new Costume("costume2", "./Sprite1/costumes/costume2.png", {
+        x: 91,
+        y: 14
+      }),
+      new Costume("costume6", "./Sprite1/costumes/costume6.png", {
+        x: 172,
+        y: 14
+      }),
+      new Costume("costume5", "./Sprite1/costumes/costume5.png", {
+        x: 91,
+        y: 14
+      }),
+      new Costume("costume4", "./Sprite1/costumes/costume4.png", {
+        x: 96,
+        y: 14
+      }),
+      new Costume("costume3", "./Sprite1/costumes/costume3.png", {
+        x: 112,
+        y: 14
+      }),
+      new Costume("oof", "./Sprite1/costumes/oof.png", { x: 96, y: -64 })
+    ];
+
+    this.sounds = [new Sound("recording1", "./Sprite1/sounds/recording1.wav")];
+
+    this.triggers = [
+      new Trigger(
+        Trigger.KEY_PRESSED,
+        { key: "right arrow" },
+        this.whenKeyRightArrowPressed
+      ),
+      new Trigger(
+        Trigger.KEY_PRESSED,
+        { key: "left arrow" },
+        this.whenKeyLeftArrowPressed
+      ),
+      new Trigger(
+        Trigger.KEY_PRESSED,
+        { key: "down arrow" },
+        this.whenKeyDownArrowPressed
+      ),
+      new Trigger(
+        Trigger.KEY_PRESSED,
+        { key: "up arrow" },
+        this.whenKeyUpArrowPressed
+      ),
+      new Trigger(
+        Trigger.KEY_PRESSED,
+        { key: "space" },
+        this.whenKeySpacePressed
+      ),
+      new Trigger(Trigger.BROADCAST, { name: "say" }, this.whenIReceiveSay)
+    ];
+  }
+
+  *whenKeyRightArrowPressed() {
+    this.direction = 90;
+    this.x += 30;
+    this.costume = "costume2";
+  }
+
+  *whenKeyLeftArrowPressed() {
+    this.direction = -95;
+    this.x += -30;
+    this.costume = "costume2";
+  }
+
+  *whenKeyDownArrowPressed() {
+    this.y += -10;
+    this.direction = 90;
+    this.costume = "costume4";
+  }
+
+  *whenKeyUpArrowPressed() {
+    this.y += 10;
+    this.direction = 90;
+    this.costume = "costume5";
+  }
+
+  *whenKeySpacePressed() {
+    this.costume = "costume6";
+    this.y += 90;
+    while (!this.touching(Color.rgb(60, 245, 0))) {
+      yield;
+    }
+    this.costume = "costume2";
+  }
+
+  *whenbackdropswitchesto() {
+    this.costume = "costume2";
+    this.visible = true;
+    while (true) {
+      if (!this.touching(Color.rgb(60, 245, 0))) {
+        this.y += -10;
+      }
+      yield;
+    }
+  }
+
+  *whenbackdropswitchesto2() {
+    this.goto(-199, -29);
+    this.visible = false;
+  }
+
+  *whenbackdropswitchesto3() {
+    this.goto(-199, -29);
+    this.visible = true;
+  }
+
+  *whenIReceiveSay() {
+    yield* this.sayAndWait(this.stage.vars.say, 2);
+  }
+}
